@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050b10">
+<title>ShineZone Detail — Turnos</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#050b10;color:#f5f5f5;font-family:Arial,Helvetica,sans-serif}
+:root{--yellow:#ffd928;--green:#16c76b;--red:#ff3150;--card:#0b141c;--line:#25333f}
+.app{max-width:1100px;margin:auto;padding:22px}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}
+.brand{font-weight:900;font-size:30px;color:var(--yellow);letter-spacing:2px}.sub{font-size:12px;color:#9da8b1;letter-spacing:3px;margin-top:3px}
+button{border:0;cursor:pointer;font-weight:800}.primary{background:var(--yellow);color:#111;padding:13px 18px;border-radius:13px}
+.days{display:flex;overflow:auto;background:#0b141c;border:1px solid var(--line);border-radius:18px;margin-bottom:20px}
+.daytab{min-width:100px;padding:15px 12px;background:transparent;color:#aeb8c0}.daytab.active{color:var(--yellow);box-shadow:inset 0 -3px var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:linear-gradient(145deg,#0b141c,#071018);border:1px solid var(--line);border-radius:18px;padding:16px;min-height:160px}
+h2{margin:0 0 12px;color:var(--yellow);font-size:20px}.closed{color:#9da8b1;font-size:13px;background:#17222b;border-radius:9px;padding:7px 10px;display:inline-block}
+.slot{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:center;border:1px solid #25333f;border-radius:13px;padding:10px;margin:9px 0;background:#09121a}
+.time{font-size:17px;font-weight:900;background:#111d27;padding:9px;border-radius:10px;text-align:center}.status{font-size:11px;font-weight:900;padding:6px 9px;border-radius:20px;display:inline-block}.free{color:#fff;background:var(--green)}.busy{color:#fff;background:var(--red)}
+.name{font-weight:800;margin-top:5px}.service{font-size:12px;color:#9da8b1;margin-top:3px}.actions button{background:transparent;color:#dbe2e7;font-size:18px;margin-left:3px}.customer-btn{background:#17222b;color:#fff;padding:12px 14px;border-radius:13px;margin-right:8px}.customer-list{max-height:190px;overflow:auto;margin-top:12px}.customer-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px;margin-top:7px}.customer-item small{display:block;color:#9da8b1;margin-top:3px}.actions .wa{display:inline-block;background:#16c76b;color:#071018;font-size:12px;font-weight:900;padding:8px 10px;border-radius:9px;text-decoration:none;margin-left:4px;white-space:nowrap}
+.empty{text-align:center;color:#9da8b1;padding:20px}.fab{position:fixed;right:25px;bottom:25px;width:58px;height:58px;border-radius:50%;background:var(--yellow);font-size:28px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.box{width:min(440px,100%);background:#0b141c;border:1px solid var(--line);border-radius:20px;padding:22px}.box h3{margin-top:0;color:var(--yellow)}
+label{display:block;font-size:12px;color:#aeb8c0;margin:12px 0 6px}input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#071018;color:#fff;font-size:16px}
+.formbuttons{display:flex;gap:10px;margin-top:18px}.secondary{background:#17222b;color:#fff;padding:12px 16px;border-radius:10px}
+footer{margin-top:25px;padding:18px;color:#aeb8c0;font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:760px){.app{padding:14px}.grid{grid-template-columns:1fr}.brand{font-size:22px}header .primary{display:none}.slot{grid-template-columns:65px 1fr auto}}
+.weekbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.weekbtn{flex:1;min-width:140px;background:#0b141c;border:1px solid var(--line);color:#aeb8c0;padding:11px 12px;border-radius:13px;font-size:13px}.weekbtn.active{color:var(--yellow);border-color:var(--yellow)}.copybtn{background:var(--green);color:#071018;padding:12px 16px;border-radius:13px;flex:1;min-width:200px}
+.daytab{flex:1;line-height:1.25}.daytab small{display:block;font-size:12px;color:#7f8b94;font-weight:700}.daytab.active small{color:var(--yellow)}.daytab b{display:block;font-size:11px;color:var(--green);letter-spacing:1px}.daytab.closedday{opacity:.5}
+.suggest{position:absolute;left:0;right:0;top:100%;z-index:5;background:#0b141c;border:1px solid var(--yellow);border-radius:10px;margin-top:4px;overflow:hidden;display:none}.suggest.show{display:block}.suggest div{padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer}.suggest div:last-child{border:0}.suggest div:hover{background:#17222b}.suggest small{color:#9da8b1;margin-left:8px}
+.status.past{background:#2a3640;color:#9da8b1}.toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:var(--green);color:#071018;font-weight:800;padding:12px 18px;border-radius:12px;display:none;z-index:20;max-width:90%;text-align:center}.toast.show{display:block}
+.modal{overflow:auto}
+</style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ShineZone">
+<meta name="theme-color" content="#050b10">
+<link rel="icon" type="image/png" sizes="1024x1024" href="icon-1024.png">
+<link rel="apple-touch-icon" href="icon-1024.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ShineZone"></head>
+<body>
+<div class="app">
+<header>
+  <div><div class="brand">SHINEZONE</div><div class="sub">DETAIL · TURNOS</div></div>
+  <div><button class="customer-btn" onclick="openCustomers()">👥 Clientes</button><button class="primary" onclick="openNew()">＋ Agregar turno</button></div>
+</header>
+<div class="weekbar" id="weekbar"></div>
+<div class="days" id="tabs"></div>
+<div class="grid" id="cards"></div>
+<footer><span>📍 Ensenada</span><span>📞 +54 221 306-1976</span><span>◎ @ShineZone.detail</span></footer>
+</div>
+<button class="fab" onclick="openNew()">＋</button>
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal">
+<div class="box">
+<h3 id="modalTitle">Agregar turno</h3>
+<label>Día</label><select id="day"></select>
+<label>Horario</label><select id="time"></select>
+<label>Nombre del cliente</label>
+<div style="position:relative"><input id="name" autocomplete="off" placeholder="Escribí las primeras letras del nombre"><div class="suggest" id="suggest"></div></div>
+<label>WhatsApp del cliente</label><input id="phone" type="tel" inputmode="tel" placeholder="Ej: 221 306 1976">
+<div style="font-size:11px;color:#9da8b1;margin-top:5px">Podés poner el número con o sin código de país (Argentina). Ej: 2213061976 o 5492213061976.</div>
+<label>Servicio (opcional)</label><input id="service" placeholder="Ej: Detailing completo">
+<div class="formbuttons">
+<button class="primary" onclick="saveBooking()">Guardar</button>
+<button class="secondary" onclick="closeModal()">Cancelar</button>
+</div>
+</div></div>
+
+<div class="modal" id="customersModal">
+<div class="box">
+<h3>Clientes guardados</h3>
+<label>Nombre y apellido</label><input id="customerName" placeholder="Ej: Juan Pérez">
+<label>WhatsApp</label><input id="customerPhone" type="tel" inputmode="tel" placeholder="Ej: 221 306 1976">
+<div class="formbuttons">
+<button class="primary" onclick="saveCustomer()">Guardar cliente</button>
+<button class="secondary" onclick="closeCustomers()">Cerrar</button>
+</div>
+<div id="customerList" class="customer-list"></div>
+</div></div>
+
+<script>
+const DAYS=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const schedule={"Lunes":[],"Martes":["10:00","13:00"],"Miércoles":["15:00"],"Jueves":["10:00","13:00","15:30"],"Viernes":["14:00","16:00"],"Sábado":["09:00","12:00","15:00"],"Domingo":[]};
+const closed=["Lunes","Domingo"];
+const TOTAL_DAYS=14;
+const $=id=>document.getElementById(id);
+const tabsEl=$("tabs"),cardsEl=$("cards"),modalEl=$("modal"),dayEl=$("day"),timeEl=$("time"),nameEl=$("name"),serviceEl=$("service"),phoneEl=$("phone"),titleEl=$("modalTitle"),customersModalEl=$("customersModal"),suggestEl=$("suggest");
+
+/* ---------- Fechas ---------- */
+function pad(n){return String(n).padStart(2,"0")}
+function dateKey(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function short(d){return pad(d.getDate())+"/"+pad(d.getMonth()+1)}
+function parseKey(k){const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)}
+function buildDays(){
+ const t=new Date();t.setHours(0,0,0,0);
+ return Array.from({length:TOTAL_DAYS},(_,i)=>{const d=new Date(t);d.setDate(t.getDate()+i);return {date:d,key:dateKey(d),name:DAYS[d.getDay()],i}});
+}
+let days=buildDays();
+function dayInfo(k){return days.find(x=>x.key===k)}
+function isPast(dayObj,t){ // horario ya pasado (solo aplica a hoy)
+ if(dayObj.i!==0)return false;
+ const[h,m]=t.split(":").map(Number);const n=new Date();
+ return n.getHours()*60+n.getMinutes()>=h*60+m;
+}
+
+/* ---------- Datos ---------- */
+let bookings={};try{bookings=JSON.parse(localStorage.getItem("shinezone_bookings")||"{}")}catch(e){bookings={}}
+let customers=[];try{customers=JSON.parse(localStorage.getItem("shinezone_customers")||"[]")}catch(e){customers=[]}
+// Migración: turnos viejos guardados por nombre de día ("Martes_10:00") -> próxima fecha de ese día
+(function migrate(){
+ let changed=false;
+ Object.keys(bookings).forEach(k=>{
+  const m=k.match(/^([^_\d-]+)_(\d\d:\d\d)$/);
+  if(!m)return;
+  const target=days.find(x=>x.name===m[1]);
+  if(target){const nk=target.key+"_"+m[2];if(!bookings[nk])bookings[nk]=bookings[k];}
+  delete bookings[k];changed=true;
+ });
+ if(changed)persist();
+})();
+let selectedKey=days[0].key,selectedWeek=0,editingKey=null;
+function key(dk,t){return dk+"_"+t}
+function persist(){try{localStorage.setItem("shinezone_bookings",JSON.stringify(bookings));return true}catch(e){alert("El navegador no permite guardar los turnos. Abrí la app directamente en Safari/Chrome y probá de nuevo.");return false}}
+function persistCustomers(){try{localStorage.setItem("shinezone_customers",JSON.stringify(customers));return true}catch(e){alert("No se pudieron guardar los clientes en este navegador.");return false}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2600)}
+function norm(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim()}
+function validPhone(p){return /^[+\d\s().-]{7,20}$/.test(p)}
+
+/* ---------- WhatsApp ---------- */
+function waNumber(p){
+ let d=String(p||"").replace(/\D/g,"");
+ d=d.replace(/^00/,"");
+ if(d.startsWith("54")){ if(!d.startsWith("549")&&d.length===12)d="549"+d.slice(2); return d}
+ d=d.replace(/^0/,"");
+ d=d.replace(/^(\d{2,4})15(\d{6,8})$/,"$1$2"); // saca el 15
+ if(d.length===10)return "549"+d;
+ return d;
+}
+function sendReminder(dk,t){
+ const b=bookings[key(dk,t)];if(!b)return;
+ const num=waNumber(b.phone);
+ if(!/^\d{10,15}$/.test(num)){alert("Revisá el número de WhatsApp de este turno.");return}
+ const d=parseKey(dk);
+ const msg=`Hola👋 Te escribo para recordarte tu turno el ${DAYS[d.getDay()].toLowerCase()} ${short(d)} a las ${t} hs. ¡Te esperamos!`;
+ window.open("https://wa.me/"+num+"?text="+encodeURIComponent(msg),"_blank");
+}
+
+/* ---------- Clientes ---------- */
+function refreshCustomerSuggestions(){}
+function openCustomers(){renderCustomers();$("customerName").value="";$("customerPhone").value="";customersModalEl.classList.add("show")}
+function closeCustomers(){customersModalEl.classList.remove("show")}
+function upsertCustomer(name,phone){
+ const i=customers.findIndex(c=>norm(c.name)===norm(name));
+ if(i>=0)customers[i]={name,phone};else customers.push({name,phone});
+}
+function saveCustomer(){
+ const name=$("customerName").value.trim(),phone=$("customerPhone").value.trim();
+ if(!name){alert("Poné el nombre del cliente.");return}
+ if(!phone){alert("Poné el WhatsApp del cliente.");return}
+ if(!validPhone(phone)){alert("Revisá el número de WhatsApp.");return}
+ upsertCustomer(name,phone);
+ if(persistCustomers()){renderCustomers();$("customerName").value="";$("customerPhone").value="";toast("Cliente guardado ✔")}
+}
+function sortedCustomers(){return customers.slice().sort((a,b)=>a.name.localeCompare(b.name,"es"))}
+function renderCustomers(){
+ const el=$("customerList");
+ if(!customers.length){el.innerHTML='<div class="empty">Todavía no guardaste clientes.</div>';return}
+ el.innerHTML=sortedCustomers().map((c,i)=>`<div class="customer-item"><div><strong>${esc(c.name)}</strong><small>${esc(c.phone)}</small></div><button class="secondary" onclick="deleteCustomer(${i})">Eliminar</button></div>`).join("");
+}
+function deleteCustomer(i){
+ const c=sortedCustomers()[i];if(!c||!confirm("¿Eliminar a "+c.name+" de la lista?"))return;
+ customers=customers.filter(x=>x!==customers.find(y=>y.name===c.name));
+ if(persistCustomers())renderCustomers();
+}
+// Sugerencias: solo aparecen cuando escribís letras parecidas al nombre
+function showSuggestions(){
+ const q=norm(nameEl.value);
+ if(!q){suggestEl.classList.remove("show");return}
+ const list=sortedCustomers().filter(c=>{const n=norm(c.name);return n.startsWith(q)||n.split(/\s+/).some(w=>w.startsWith(q))||n.includes(q)}).filter(c=>norm(c.name)!==q).slice(0,5);
+ if(!list.length){suggestEl.classList.remove("show");return}
+ suggestEl.innerHTML=list.map((c,i)=>`<div data-i="${i}">${esc(c.name)}<small>${esc(c.phone)}</small></div>`).join("");
+ suggestEl._list=list;suggestEl.classList.add("show");
+}
+suggestEl.addEventListener("pointerdown",e=>{
+ e.preventDefault();
+ const div=e.target.closest("[data-i]");if(!div)return;
+ const c=suggestEl._list[+div.dataset.i];
+ nameEl.value=c.name;phoneEl.value=c.phone;suggestEl.classList.remove("show");
+});
+nameEl.addEventListener("input",()=>{
+ showSuggestions();
+ const c=customers.find(c=>norm(c.name)===norm(nameEl.value));
+ if(c)phoneEl.value=c.phone;
+});
+nameEl.addEventListener("blur",()=>setTimeout(()=>suggestEl.classList.remove("show"),150));
+
+/* ---------- Pantalla ---------- */
+function weekDays(w){return days.slice(w*7,w*7+7)}
+function weekLabel(w){const wd=weekDays(w);return short(wd[0].date)+" al "+short(wd[6].date)}
+function render(){
+ const sel=dayInfo(selectedKey)||days[0];selectedKey=sel.key;selectedWeek=Math.floor(sel.i/7);
+ $("weekbar").innerHTML=[0,1].map(w=>`<button class="weekbtn ${w===selectedWeek?'active':''}" onclick="selectWeek(${w})">${w===0?'Semana 1':'Semana 2'} · ${weekLabel(w)}</button>`).join("")+`<button class="copybtn" onclick="copyAvailability()">📋 Copiar disponibilidad de semana</button>`;
+ tabsEl.innerHTML=weekDays(selectedWeek).map(x=>`<button class="daytab ${x.key===selectedKey?'active':''} ${closed.includes(x.name)?'closedday':''}" onclick="selectDay('${x.key}')">${x.name.slice(0,3)}<small>${short(x.date)}</small>${x.i===0?'<b>HOY</b>':''}</button>`).join("");
+ const d=sel,title=`${d.name} ${short(d.date)}`;
+ if(closed.includes(d.name)){
+  cardsEl.innerHTML=`<div class="card" style="grid-column:1/-1"><h2>${title}</h2><span class="closed">NO TRABAJO</span><div class="empty">No hay turnos disponibles este día.</div></div>`;return;
+ }
+ const times=schedule[d.name]||[];
+ cardsEl.innerHTML=`<div class="card" style="grid-column:1/-1"><h2>Turnos del ${title}</h2>${
+  times.length?times.map(t=>{
+   const b=bookings[key(d.key,t)],past=isPast(d,t);
+   return `<div class="slot">
+    <div class="time">${t}</div>
+    <div>${b
+     ?`<span class="status busy">OCUPADO</span><div class="name">${esc(b.name)}</div><div class="service">${esc(b.service||"")}</div>${b.phone?`<div class="service">WhatsApp: ${esc(b.phone)}</div><div class="actions"><button class="wa" style="margin-left:0;margin-top:6px;border:0;cursor:pointer" onclick="sendReminder('${d.key}','${t}')">Enviar recordatorio ↗</button></div>`:`<div class="service">Agregá un WhatsApp al editar el turno</div>`}`
+     :(past?`<span class="status past">PASADO</span>`:`<span class="status free">DISPONIBLE</span><div class="service">Podés agendar este turno</div>`)}
+    </div>
+    <div class="actions">${b
+     ?`<button title="Editar" onclick="editBooking('${d.key}','${t}')">✎</button><button title="Eliminar" onclick="deleteBooking('${d.key}','${t}')">🗑</button>`
+     :`<button title="Agendar" onclick="openNewFor('${d.key}','${t}')">＋</button>`}
+    </div>
+   </div>`}).join(""):`<div class="empty">No hay turnos cargados para este día.</div>`
+ }</div>`;
+}
+function selectDay(k){selectedKey=k;render()}
+function selectWeek(w){selectedKey=weekDays(w)[0].key;render()}
+
+/* ---------- Copiar disponibilidad ---------- */
+function availabilityText(w){
+ const wd=weekDays(w);
+ const lines=["🚗✨ *ShineZone Detail* — Turnos disponibles","Semana del "+weekLabel(w),""];
+ let any=false;
+ wd.forEach(d=>{
+  if(closed.includes(d.name))return;
+  const free=(schedule[d.name]||[]).filter(t=>!bookings[key(d.key,t)]&&!isPast(d,t));
+  if(!free.length)return;
+  any=true;
+  lines.push(`📅 ${d.name}`);free.forEach(t=>lines.push("• "+t));lines.push("");
+ });
+ if(!any)lines.push("Por el momento no quedan turnos disponibles esta semana.");
+ else{lines.push("Decime cuál te queda mejor y te lo reservo. 🙌");}
+ return lines.join("\n");
+}
+function copyAvailability(){
+ const text=availabilityText(selectedWeek);
+ const done=()=>toast("✔ Disponibilidad copiada");
+ const fallback=()=>{const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){prompt("Copiá el mensaje:",text)}document.body.removeChild(ta)};
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done,fallback);else fallback();
+}
+
+/* ---------- Turnos ---------- */
+function fillDays(){dayEl.innerHTML=days.filter(d=>!closed.includes(d.name)).map(d=>`<option value="${d.key}">${d.name} ${short(d.date)}${d.i===0?' (hoy)':''}</option>`).join("");updateTimes()}
+function updateTimes(){const d=dayInfo(dayEl.value);timeEl.innerHTML=((d&&schedule[d.name])||[]).map(t=>`<option value="${t}">${t}</option>`).join("")}
+dayEl.addEventListener("change",updateTimes);
+function firstOpenKey(){return (days.find(d=>d.key===selectedKey&&!closed.includes(d.name))||days.find(d=>!closed.includes(d.name))).key}
+function openForm(title,dk,t,b){
+ editingKey=null;titleEl.textContent=title;fillDays();
+ dayEl.value=dk;updateTimes();if(t)timeEl.value=t;
+ nameEl.value=b?b.name:"";phoneEl.value=b?(b.phone||""):"";serviceEl.value=b?(b.service||""):"";
+ suggestEl.classList.remove("show");modalEl.classList.add("show");
+}
+function openNewFor(dk,t){openForm("Agregar turno",dk,t)}
+function openNew(){openForm("Agregar turno",firstOpenKey())}
+function editBooking(dk,t){openForm("Editar turno",dk,t,bookings[key(dk,t)]);editingKey=key(dk,t)}
+function saveBooking(){
+ const dk=dayEl.value,t=timeEl.value,n=nameEl.value.trim(),phone=phoneEl.value.trim(),svc=serviceEl.value.trim();
+ if(!t){alert("Elegí un horario.");return}
+ if(!n){alert("Poné el nombre del cliente.");return}
+ if(phone&&!validPhone(phone)){alert("Revisá el número de WhatsApp.");return}
+ const nk=key(dk,t),old=editingKey;
+ if(bookings[nk]&&nk!==old){alert("Ese turno ya está ocupado.");return}
+ if(old&&old!==nk)delete bookings[old];
+ bookings[nk]={name:n,phone,service:svc};
+ if(phone){upsertCustomer(n,phone);persistCustomers()}
+ if(persist()){selectedKey=dk;closeModal();render()}
+}
+function deleteBooking(dk,t){const k=key(dk,t);if(bookings[k]&&confirm(`¿Sacar el turno de ${bookings[k].name}?`)){delete bookings[k];if(persist())render()}}
+function closeModal(){modalEl.classList.remove("show");suggestEl.classList.remove("show")}
+Object.assign(window,{openCustomers,closeCustomers,saveCustomer,deleteCustomer,openNew,openNewFor,saveBooking,closeModal,editBooking,deleteBooking,selectDay,selectWeek,copyAvailability,sendReminder});
+
+/* ---------- Actualización automática de fechas ---------- */
+function refreshDays(){
+ const today=dateKey(new Date());
+ if(today!==days[0].key){days=buildDays();if(!dayInfo(selectedKey))selectedKey=days[0].key;}
+ if(!modalEl.classList.contains("show")&&!customersModalEl.classList.contains("show"))render();
+}
+setInterval(refreshDays,60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshDays()});
+window.addEventListener("focus",refreshDays);
+render();
+</script>
+
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script></body>
+</html>
